@@ -1,0 +1,5 @@
+# Backups de IDEs e configurações locais
+.idea/
+*.swp
+*.swo
+.DS_Store
