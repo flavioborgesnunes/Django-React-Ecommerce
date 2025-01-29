@@ -131,6 +131,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+AUTH_USER_MODEL = "userauths.User"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -138,13 +140,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Desphixs",
-    "site_header": "Desphixs",
+    "site_title": "Flávio",
+    "site_header": "Flávio",
     "site_brand": "Modern Marketplace ",
     "site_icon": "images/favicon.ico",
     "site_logo": "images/logos/logo.jpg",
-    "welcome_sign": "Welcome To Desphixs",
-    "copyright": "All right reserved to Desphixs",
+    "welcome_sign": "Welcome To Flávio",
+    "copyright": "All right reserved to Flávio Nunes",
     "user_avatar": "images/photos/logo.jpg",
     "topmenu_links": [
         {"name": "Dashboard", "url": "home",
