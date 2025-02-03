@@ -34,3 +34,5 @@ if (import.meta.env.DEV) {
     mountStoreDevtool('Store', useAuthStore);
 }
 
+// Export the 'useAuthStore' for use in other parts of the application.
+export { useAuthStore };
