@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { LoggedOutView } from '../shop/home';
+// import { LoggedOutView } from '../shop/home';
 import { logout } from '../../utils/auth';
 import { Link } from 'react-router-dom';
 
@@ -36,3 +36,25 @@ const Logout = () => {
 };
 
 export default Logout;
+
+// import { useEffect } from 'react'
+// import { logout } from '../../utils/auth'
+// import { Link } from 'react-router-dom'
+
+// function Logout() {
+//     useEffect(() => {
+//         logout()
+//     }, [])
+//     return (
+//         <div>
+//             <div>
+//                 <h1>logout</h1>
+//                 <Link to={'/register'}>Register</Link>
+//                 <Link to={'/login'}>Login</Link>
+
+//             </div>
+//         </div>
+//     )
+// }
+
+// export default Logout

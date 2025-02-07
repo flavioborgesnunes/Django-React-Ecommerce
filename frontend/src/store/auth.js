@@ -1,6 +1,7 @@
 // Import the 'create' function from the 'zustand' library.
 import { create } from 'zustand';
 
+
 // Import the 'mountStoreDevtool' function from the 'simple-zustand-devtools' library
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
@@ -27,7 +28,23 @@ const useAuthStore = create((set, get) => ({
 
     // Define a function 'isLoggedIn' that checks if 'allUserData' is not null.
     isLoggedIn: () => get().allUserData !== null,
+
+    //MEU CÓDIGO************########################$$$$$$$$$$$$$$$$$$$$$#############
+
+
+    checkAuth: () => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            set({ allUserData: JSON.parse(userData) });
+        }
+    }
+
+    //MEU CÓDIGO************########################$$$$$$$$$$$$$$$$$$$$$#############
+
 }));
+
+
+
 
 // Conditionally attach the DevTools only in a development environment.
 if (import.meta.env.DEV) {
