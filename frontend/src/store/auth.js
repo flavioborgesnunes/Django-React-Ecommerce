@@ -29,18 +29,6 @@ const useAuthStore = create((set, get) => ({
     // Define a function 'isLoggedIn' that checks if 'allUserData' is not null.
     isLoggedIn: () => get().allUserData !== null,
 
-    //MEU CÓDIGO************########################$$$$$$$$$$$$$$$$$$$$$#############
-
-
-    checkAuth: () => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            set({ allUserData: JSON.parse(userData) });
-        }
-    }
-
-    //MEU CÓDIGO************########################$$$$$$$$$$$$$$$$$$$$$#############
-
 }));
 
 

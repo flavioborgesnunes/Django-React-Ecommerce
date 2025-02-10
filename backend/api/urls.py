@@ -9,4 +9,6 @@ urlpatterns = [
     path('user/register/', userauths_views.RegisterView.as_view()),
     path('user/password-reset/<email>/',
          userauths_views.PasswordResetEmailVerify.as_view()),
+    path('user/password-change/',
+         userauths_views.PasswordChangeView.as_view(), name="password-change"),
 ]
