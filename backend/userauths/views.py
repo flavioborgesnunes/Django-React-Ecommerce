@@ -52,16 +52,16 @@ class PasswordChangeView(generics.CreateAPIView):
 
         otp = payload['otp']
         uidb64 = payload['uidb64']
-        reset_token = payload['reset_token']
         password = payload['password']
+        # reset_token = payload['reset_token']
 
         user = User.objects.get(id=uidb64, otp=otp)
 
         if user:
             user.set_password(password)
             user.otp = ""
-            user.reset_token = ""
             user.save()
+            # user.reset_token = ""
 
             return Response({"message": "Password Reset Successfuly"},
                             status=status.HTTP_201_CREATED)
