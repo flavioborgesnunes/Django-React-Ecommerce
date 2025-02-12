@@ -214,3 +214,7 @@ class CartOrderItem(models.Model):
 
     def __str__(self):
         return self.oid
+
+
+class Test(models.Model):
+    pass
