@@ -10,5 +10,10 @@ urlpatterns = [
     path('user/password-reset/<email>/',
          userauths_views.PasswordResetEmailVerify.as_view()),
     path('user/password-change/',
-         userauths_views.PasswordChangeView.as_view(), name="password-change"),
+         userauths_views.PasswordChangeView.as_view()),
+
+    # Stores Endpoints
+
+    path('category/', store_views.CategoryListAPIView.as_view()),
+    path('products/', store_views.ProductAPIView.as_view()),
 ]

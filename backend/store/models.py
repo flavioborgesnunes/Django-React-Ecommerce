@@ -59,10 +59,10 @@ class Product(models.Model):
     slug = models.SlugField(unique=True)
     date = models.DateTimeField(auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        if self.slug == "" or self.slug == None:
-            self.slug = slugify(self.title)
-        super(Product, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.slug == "" or self.slug == None:
+    #         self.slug = slugify(self.title)
+    #     super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -87,8 +87,17 @@ class Product(models.Model):
     def size(self):
         return Size.objects.filter(product=self)
 
+    # def save(self, *args, **kwargs):
+    #     self.rating = self.product_rating()
+    #     super(Product, self).save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
-        self.rating = self.product_rating()
+        if not self.slug:
+            self.slug = slugify(self.title)
+
+        rating_value = self.product_rating()
+        self.rating = rating_value if rating_value is not None else 0
+
         super(Product, self).save(*args, **kwargs)
 
 
