@@ -1,11 +1,11 @@
 from django.contrib import admin
 from store.models import (Cart, CartOrder, CartOrderItem, Category, Color,
-                          Coupon, Galery, Notification, Product, ProductFaq,
+                          Coupon, Gallery, Notification, Product, ProductFaq,
                           Review, Size, Specification, Wishlist)
 
 
-class GaleryInline(admin.TabularInline):
-    model = Galery
+class GalleryInline(admin.TabularInline):
+    model = Gallery
     extra = 0
 
 
@@ -29,7 +29,7 @@ class ProductAdmin(admin.ModelAdmin):
                     "stock_qty", "in_stock", "vendor", "featured"]
     list_editable = ["featured"]
     list_filter = ["date"]
-    inlines = [GaleryInline, SpecificationInline,
+    inlines = [GalleryInline, SpecificationInline,
                SizeInline, ColorInline]
 
 

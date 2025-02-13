@@ -72,14 +72,29 @@ class Product(models.Model):
             product=self).aggregate(avg_rating=models.Avg("rating"))
         return product_rating["avg_rating"]
 
+    def rating_count(self):
+        return Review.objects.filter(product=self).count()
+
+    def gallery(self):
+        return Gallery.objects.filter(product=self)
+
+    def color(self):
+        return Color.objects.filter(product=self)
+
+    def specification(self):
+        return Specification.objects.filter(product=self)
+
+    def size(self):
+        return Size.objects.filter(product=self)
+
     def save(self, *args, **kwargs):
         self.rating = self.product_rating()
         super(Product, self).save(*args, **kwargs)
 
 
-class Galery(models.Model):
+class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.FileField(upload_to="galery", default="galery.jpg")
+    image = models.FileField(upload_to="gallery", default="gallery.jpg")
     active = models.BooleanField(default=True)
     gid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
 
