@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.text import slugify
 from shortuuid.django_fields import ShortUUIDField
 from userauths.models import Profile, User
@@ -64,6 +66,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    def product_rating(self):
+        product_rating = Review.objects.filter(
+            product=self).aggregate(avg_rating=models.Avg("rating"))
+        return product_rating["avg_rating"]
+
+    def save(self, *args, **kwargs):
+        self.rating = self.product_rating()
+        super(Product, self).save(*args, **kwargs)
 
 
 class Galery(models.Model):
@@ -216,5 +227,88 @@ class CartOrderItem(models.Model):
         return self.oid
 
 
-class Test(models.Model):
-    pass
+class ProductFaq(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    email = models.EmailField(null=True, blank=True)
+    question = models.CharField(max_length=1000)
+    answer = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question
+
+    class Meta:
+        verbose_name_plural = "Products FAQs"
+
+
+class Review(models.Model):
+    RATING = (
+        (1, "1 star"),
+        (2, "2 star"),
+        (3, "3 star"),
+        (4, "4 star"),
+        (5, "5 star"),
+    )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    review = models.TextField()
+    replay = models.TextField(null=True, blank=True)
+    rating = models.IntegerField(default=None, choices=RATING)
+    active = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.title
+
+    class Meta:
+        verbose_name_plural = "Reviews & Rating"
+
+    def profile(self):
+        return Profile.objects.get(user=self.user)
+
+
+@receiver(post_save, sender=Review)
+def update_product_rating(sender, instance, **kwargs):
+    if instance.product:
+        instance.product.save()
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.title
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(
+        CartOrder, on_delete=models.SET_NULL, null=True, blank=True)
+    order_item = models.ForeignKey(
+        CartOrderItem, on_delete=models.SET_NULL, null=True, blank=True)
+    seen = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.order:
+            return self.order.oid
+        else:
+            return f"Notification - {self.pk}"
+
+
+class Coupon(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
+    user_by = models.ManyToManyField(User, blank=True)
+    code = models.CharField(max_length=1000)
+    discount = models.IntegerField(default=1)
+    active = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.code
