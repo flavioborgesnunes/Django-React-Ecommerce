@@ -72,7 +72,7 @@ function StoreHeader() {
                                     Vendor
                                 </a>
                                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><Link className="dropdown-item" to="/vendor/dashboard/"> <i className='fas fa-user'></i> Dashboard</Link></li>
+                                    <li><Link className="dropdown-item" to="dashboard/"> <i className='fas fa-user'></i> Dashboard</Link></li>
                                     <li><Link className="dropdown-item" to="/vendor/products/"> <i className='bi bi-grid-fill'></i> Products</Link></li>
                                     <li><Link className="dropdown-item" to="/vendor/product/new/"> <i className='fas fa-plus-circle'></i> Add Products</Link></li>
                                     <li><Link className="dropdown-item" to="/vendor/orders/"> <i className='fas fa-shopping-cart'></i> Orders</Link></li>
