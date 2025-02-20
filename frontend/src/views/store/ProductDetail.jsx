@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom";
 import apiInstance from '../../utils/axios'
+import GetCurrentAddress from '../plugin/UserCountry';
+import UserData from '../plugin/UserData';
+import CartID from '../plugin/CartID'
 
-function ProductDatail() {
+function ProductDetail() {
     const param = useParams()
 
     const [product, setProduct] = useState({})
@@ -15,7 +18,9 @@ function ProductDatail() {
     const [sizeValue, setSizeValue] = useState('no size')
     const [sizePrice, setSizePrice] = useState('')
     const [qtyValue, setQtyValue] = useState(1)
-
+    const currentAddres = GetCurrentAddress()
+    const userData = UserData()
+    const cart_id = CartID()
 
     useEffect(() => {
         apiInstance.get(`products/${param.slug}/`).then((res) => {
@@ -36,19 +41,37 @@ function ProductDatail() {
 
     const handleSizeButtonClicked = (event) => {
         const sizeNameInput = event.target.closest('.size_button').parentNode.querySelector('.size_name')
-        const sizePriceInput = event.target.closest('.size_button').parentNode.querySelector('.size_price')
+        // const sizePriceInput = event.target.closest('.size_button').parentNode.querySelector('.size_price')
         setSizeValue(sizeNameInput.value)
-        setSizePrice(sizePriceInput.value)
+        // setSizePrice(sizePriceInput.value)
     }
 
     const hadleQuantityValue = (event) => {
         setQtyValue(event.target.value)
     }
-    const handleAddToCart = () => {
-        console.log("Qty", qtyValue);
-        console.log("Color", colorValue);
-        console.log("Size", sizeValue);
-        console.log("product_id", product.id);
+    const handleAddToCart = async () => {
+
+        try {
+            const formData = new FormData()
+
+            formData.append("product_id", product.id)
+            formData.append("user_id", userData?.user_id)
+            formData.append("qty", qtyValue)
+            formData.append("shipping_amount", product.shipping_amount)
+            formData.append("country", currentAddres.country)
+            formData.append("price", product.price)
+            formData.append("size", sizeValue)
+            formData.append("color", colorValue)
+            formData.append("cart_id", cart_id)
+
+            const response = await apiInstance.post(`cart-view/`, formData)
+            console.log(response.data);
+
+
+        } catch (error) {
+            console.log(error);
+
+        }
 
     }
 
@@ -83,7 +106,7 @@ function ProductDatail() {
                                     <div className="mt-3 d-flex">
                                         {galery?.map((galery, index) => (
 
-                                            <div className="p-3">
+                                            <div className="p-3" key={index}>
                                                 <img
                                                     src={galery?.image}
                                                     style={{
@@ -139,12 +162,13 @@ function ProductDatail() {
                                                     <td>{product.category?.title}</td>
                                                 </tr>
 
-                                                {specifications?.map((sp, index) => (<tr>
-                                                    <th className="ps-0 w-25" scope="row">
-                                                        <strong>{sp.title}</strong>
-                                                    </th>
-                                                    <td>{sp.content}</td>
-                                                </tr>
+                                                {specifications?.map((sp, index) => (
+                                                    <tr key={index}>
+                                                        <th className="ps-0 w-25" scope="row">
+                                                            <strong>{sp.title}</strong>
+                                                        </th>
+                                                        <td>{sp.content}</td>
+                                                    </tr>
                                                 ))}
                                             </tbody>
                                         </table>
@@ -172,7 +196,9 @@ function ProductDatail() {
                                                 <>
                                                     <div className="col-md-6 mb-4">
                                                         <div className="form-outline">
-                                                            <label className="form-label" htmlFor="typeNumber"><b>Size: </b><span>{sizeValue}  <b>price:</b> {sizePrice}</span></label>
+                                                            <label className="form-label" htmlFor="typeNumber"><b>Size: </b><span>{sizeValue}</span>
+                                                                {/* <b>price:</b> {sizePrice}</span> */}
+                                                            </label>
                                                         </div>
                                                         <div className='d-flex'>
                                                             {size?.map((s, index) => (
@@ -180,7 +206,7 @@ function ProductDatail() {
                                                                 <div key={index} className='me-2'>
                                                                     <input type="hidden" className='size_name' value={s.name} />
                                                                     <button className='btn btn-secondary size_button' type='button' onClick={handleSizeButtonClicked}>{s.name}</button>
-                                                                    <input type="hidden" className='size_price' value={s.price} />
+                                                                    {/* <input type="hidden" className='size_price' value={s.price} /> */}
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -258,12 +284,13 @@ function ProductDatail() {
                                             <td>{product.category?.title}</td>
                                         </tr>
 
-                                        {specifications?.map((sp, index) => (<tr>
-                                            <th className="ps-0 w-25" scope="row">
-                                                <strong>{sp.title}</strong>
-                                            </th>
-                                            <td>{sp.content}</td>
-                                        </tr>
+                                        {specifications?.map((sp, index) => (
+                                            <tr key={index}>
+                                                <th className="ps-0 w-25" scope="row">
+                                                    <strong>{sp.title}</strong>
+                                                </th>
+                                                <td>{sp.content}</td>
+                                            </tr>
                                         ))}
                                     </tbody>
                                 </table>
@@ -472,4 +499,4 @@ function ProductDatail() {
     )
 }
 
-export default ProductDatail
+export default ProductDetail
