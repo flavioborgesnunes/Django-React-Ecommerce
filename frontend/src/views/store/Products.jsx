@@ -1,11 +1,67 @@
 import React, { useState, useEffect } from 'react'
 import apiInstance from '../../utils/axios'
 import { Link } from 'react-router-dom'
+import GetCurrentAddress from '../plugin/UserCountry';
+import UserData from '../plugin/UserData';
+import CartID from '../plugin/CartID'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top",
+    showConfirmButton: false,
+    timer: 1500,
+    timeProgressBar: true,
+})
+
+
 
 
 function Products() {
     const [products, setProducts] = useState([])
     const [category, setCategory] = useState([])
+
+    const [colorValue, setColorValue] = useState("No Color")
+    const [sizeValue, setSizeValue] = useState("No Size")
+    const [qtyValue, setQtyValue] = useState(1)
+
+
+    const [selectedProduct, setSelectedProduct] = useState(null)
+    const [selectedColors, setSelectedColors] = useState({})
+    const [selectedSize, setSelectedSize] = useState({})
+
+    const currentAddress = GetCurrentAddress()
+    const userData = UserData()
+    const cart_id = CartID()
+
+
+    const handleColorButtonClick = (event, product_id, colorName) => {
+        setColorValue(colorName);
+        setSelectedProduct(product_id)
+
+        setSelectedColors((prevSelectedColors) => ({
+            ...prevSelectedColors,
+            [product_id]: colorName
+        }))
+    }
+
+    const handleSizeButtonClick = (event, product_id, sizeName) => {
+        setSizeValue(sizeName);
+        setSelectedProduct(product_id)
+
+        setSelectedSize((prevSelectedSize) => ({
+            ...prevSelectedSize,
+            [product_id]: sizeName
+        }))
+    }
+    const handleQtyChange = (event, product_id) => {
+        setQtyValue(event.target.value)
+        setSelectedProduct(product_id)
+
+    }
+
+
+
     useEffect(() => {
         apiInstance.get(`products/`).then((response) => {
 
@@ -19,6 +75,37 @@ function Products() {
             .then((response) => setCategory(response.data))
             .catch((error) => console.error("Erro ao buscar categorias:", error));
     }, []);
+
+    const handleAddToCart = async (product_id, price, shipping_amount) => {
+        try {
+            const formData = new FormData()
+
+            formData.append("product_id", product_id)
+            formData.append("user_id", userData?.user_id)
+            formData.append("qty", qtyValue)
+            formData.append("shipping_amount", shipping_amount)
+            formData.append("country", currentAddress.country)
+            formData.append("price", price)
+            formData.append("size", sizeValue)
+            formData.append("color", colorValue)
+            formData.append("cart_id", cart_id)
+
+            const response = await apiInstance.post(`cart-view/`, formData)
+            console.log(response.data);
+            Toast.fire({
+                icon: "success",
+                title: response.data.message
+            })
+
+
+        } catch (error) {
+            console.log(error);
+
+        }
+
+    }
+
+
     return (
         <>
             <main className="mt-5">
@@ -27,7 +114,7 @@ function Products() {
                         <div className="row">
                             {products?.map((p, index) => (
 
-                                <div className="col-lg-4 col-md-12 mb-4">
+                                <div className="col-lg-4 col-md-12 mb-4" key={index}>
                                     <div className="card">
                                         <div
                                             className="bg-image hover-zoom ripple"
@@ -82,57 +169,69 @@ function Products() {
                                                     className="dropdown-menu"
                                                     aria-labelledby="dropdownMenuClickable"
                                                 >
+
                                                     <div className="d-flex flex-column">
                                                         <li className="p-1">
-                                                            <b>Size</b>: XL
+                                                            <b>Quantity</b>:
                                                         </li>
                                                         <div className="p-1 mt-0 pt-0 d-flex flex-wrap">
+
                                                             <li>
-                                                                <button className="btn btn-secondary btn-sm me-2 mb-1">
-                                                                    XXL
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button className="btn btn-secondary btn-sm me-2 mb-1">
-                                                                    XXL
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button className="btn btn-secondary btn-sm me-2 mb-1">
-                                                                    XXL
-                                                                </button>
-                                                            </li>
-                                                        </div>
-                                                    </div>
-                                                    <div className="d-flex flex-column mt-3">
-                                                        <li className="p-1">
-                                                            <b>COlor</b>: Red
-                                                        </li>
-                                                        <div className="p-1 mt-0 pt-0 d-flex flex-wrap">
-                                                            <li>
-                                                                <button
-                                                                    className="btn btn-sm me-2 mb-1 p-3"
-                                                                    style={{ backgroundColor: "red" }}
-                                                                />
-                                                            </li>
-                                                            <li>
-                                                                <button
-                                                                    className="btn btn-sm me-2 mb-1 p-3"
-                                                                    style={{ backgroundColor: "green" }}
-                                                                />
-                                                            </li>
-                                                            <li>
-                                                                <button
-                                                                    className="btn btn-sm me-2 mb-1 p-3"
-                                                                    style={{ backgroundColor: "yellow" }}
+                                                                <input
+                                                                    className='form-control'
+                                                                    type="number"
+                                                                    onChange={(e) => handleQtyChange(e, p.id)}
                                                                 />
                                                             </li>
                                                         </div>
                                                     </div>
+
+                                                    {p.size?.length > 0 &&
+                                                        <div className="d-flex flex-column">
+                                                            <li className="p-1">
+                                                                <b>Size</b>: {selectedSize[p.id] || "NoSize"}
+                                                            </li>
+                                                            <div className="p-1 mt-0 pt-0 d-flex flex-wrap">
+                                                                {p.size?.map((s, index) => (
+
+                                                                    <li key={index}>
+                                                                        <button
+                                                                            className="btn btn-secondary btn-sm me-2 mb-1"
+                                                                            onClick={(e) => handleSizeButtonClick(e, p.id, s.name)}
+
+                                                                        >
+                                                                            {s.name}
+                                                                        </button>
+                                                                    </li>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    {p.size?.length > 0 &&
+                                                        <div className="d-flex flex-column mt-3">
+                                                            <li className="p-1">
+                                                                <b>Color</b>:{selectedColors[p.id] || "No Color"}
+                                                            </li>
+                                                            <div className="p-1 mt-0 pt-0 d-flex flex-wrap">
+                                                                {p.color?.map((c, index) => (
+
+                                                                    <li key={index}>
+                                                                        <button
+                                                                            className="btn btn-sm me-2 mb-1 p-3"
+                                                                            style={{ backgroundColor: c.color_code }}
+                                                                            onClick={(e) => handleColorButtonClick(e, p.id, c.name)}
+                                                                        />
+                                                                    </li>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    }
                                                     <div className="d-flex mt-3 p-1">
                                                         <button
                                                             type="button"
                                                             className="btn btn-primary me-1 mb-1"
+                                                            onClick={() => handleAddToCart(p.id, p.price, p.shipping_amount)}
                                                         >
                                                             <i className="fas fa-shopping-cart" />
                                                         </button>
@@ -160,7 +259,7 @@ function Products() {
                             <div className='row'>
                                 {category?.map((c, index) => (
 
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2" key={index}>
                                         <img src={c.image} style={{ width: "100px", height: "100px", borderRadius: "50%", objectFit: "cover" }} alt="" />
                                         <h6>{c.title}</h6>
                                     </div>

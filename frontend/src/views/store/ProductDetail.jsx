@@ -18,7 +18,7 @@ function ProductDetail() {
     const [sizeValue, setSizeValue] = useState('no size')
     const [sizePrice, setSizePrice] = useState('')
     const [qtyValue, setQtyValue] = useState(1)
-    const currentAddres = GetCurrentAddress()
+    const currentAddress = GetCurrentAddress()
     const userData = UserData()
     const cart_id = CartID()
 
@@ -58,7 +58,7 @@ function ProductDetail() {
             formData.append("user_id", userData?.user_id)
             formData.append("qty", qtyValue)
             formData.append("shipping_amount", product.shipping_amount)
-            formData.append("country", currentAddres.country)
+            formData.append("country", currentAddress.country)
             formData.append("price", product.price)
             formData.append("size", sizeValue)
             formData.append("color", colorValue)
