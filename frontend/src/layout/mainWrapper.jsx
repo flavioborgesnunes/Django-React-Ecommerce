@@ -9,14 +9,14 @@ const MainWrapper = ({ children }) => {
     useEffect(() => {
         // Define an asynchronous function 'handler'
         const handler = async () => {
-            // Set the 'loading' state to 'true' to indicate the component is loading
-            setLoading(true);
-
-            // Perform an asynchronous user authentication action
-            await setUser();
-
-            // Set the 'loading' state to 'false' to indicate the loading process has completed
-            setLoading(false);
+            try {
+                setLoading(true);
+                await setUser();
+            } catch (error) {
+                console.error("Erro ao configurar usuário:", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         // Call the 'handler' function immediately after the component is mounted
